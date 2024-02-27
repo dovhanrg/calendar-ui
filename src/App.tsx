@@ -1,26 +1,28 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {useState} from 'react';
+import {WEEK_DAYS, YEAR} from "./consts";
+import {getArrayOfDays, getWeekShift} from "./helpers/dates";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
 
-export default App;
+
+
+export default function App() {
+    const [year, setYear] = useState(YEAR);
+    const days = getArrayOfDays(year);
+    const handlePrevYearClick = () => setYear(year-1);
+    const handleNextYearClick = () => setYear(year+1);
+    return (
+        <div>
+            <div>
+                <button onClick={handlePrevYearClick}>{`${year-1}<<`}</button>
+                <button onClick={handleNextYearClick}>{`>>${year+1}`}</button>
+            </div>
+            <div
+                style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr 1fr'}}
+            >
+                {WEEK_DAYS.map(dayName => <div>{dayName}</div>)}
+                {new Array(getWeekShift(year)).fill(null).map(() => <div />)}
+                {days.map((day) => <div>{day}</div>)}
+            </div>
+        </div>
+    );
+};

@@ -13,16 +13,9 @@ const EditableField = ({text, onChange}: Props) => {
     return (
         <InlineEdit
             defaultValue={text}
-            // label="Send feedback"
             editView={({errorMessage, ...fieldProps}, ref) => {
-
-                // console.log(fieldProps);
                 return (
-                    // @ts-ignore - textarea does not pass through ref as a prop
-                    // <TextArea style={{minHeight: '10px', minWidth: '50px',wordBreak: 'break-word', padding: '10px', border: '1px dotted #f0f'}}
-                    //           minimumRows={2} isCompact {...fieldProps} ref={ref}/>
                     <TextField {...fieldProps} autoFocus />
-
                 )
             }}
             readView={() => (

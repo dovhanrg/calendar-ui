@@ -64,11 +64,22 @@ export default function App() {
         return (text: string) => {
             setRecords((records) => {
                 const recordIndex = records[recordsIndex].findIndex((record) => record.id === recordId);
-                records[recordsIndex][recordIndex].text = text;
+                if (text.trim()) {
+                    records[recordsIndex][recordIndex].text = text;
+                } else {
+                    records[recordsIndex].splice(recordIndex, 1);
+                }
                 return [...records];
             });
         }
     };
+
+    const handleAddRecord = (recordsIndex: number) => {
+        setRecords((records) => {
+            records[recordsIndex] = [{id: uuidV4(), text: ''}, ...records[recordsIndex]];
+            return [...records];
+        });
+    }
 
 
 
@@ -93,16 +104,17 @@ export default function App() {
                     {records.map((dayRecords, index) => {
                         return (
                             <Droppable id={(index).toString(10)}>
-                                {/*{dayRecords.length === 0*/}
-                                {/*    ? <div style={{height: '40px', border: '1px solid blue'}}>*/}
-                                {/*        <button>add record</button>*/}
-                                {/*    </div>*/}
-                                    <SortableContext items={dayRecords} strategy={verticalListSortingStrategy}>
-                                        {dayRecords.map((text) => {
-                                            const onRecordChange = handleUpdateRecord(index, text.id);
-                                            return (<SortableItem onRecordChange={onRecordChange} id={text.id} text={text.text} key={text.id} />)
-                                        })}
-                                    </SortableContext>
+                                <button onClick={() => handleAddRecord(index)}>Add</button>
+                                <SortableContext items={dayRecords} strategy={verticalListSortingStrategy}>
+                                    {dayRecords.map((text) => {
+                                        return (<SortableItem
+                                            onRecordChange={handleUpdateRecord(index, text.id)}
+                                            id={text.id}
+                                            text={text.text}
+                                            key={text.id}
+                                        />)
+                                    })}
+                                </SortableContext>
                             </Droppable>
                         );
                     })}

@@ -27,13 +27,12 @@ import {SortableItem} from "../SortableItem";
 
 
 type Props = {
-    draggableIds: number[];
     droppableId: string;
 }
 
-const TextField = ({draggableIds, droppableId}: Props) => {
+const TextField = ({droppableId}: Props) => {
 
-    const [items, setItems] = useState([12121, 12122, 121213, ...draggableIds]);
+    const [items, setItems] = useState([1,2,3,4]);
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -56,26 +55,15 @@ const TextField = ({draggableIds, droppableId}: Props) => {
     return (
         <div style={{maxWidth: '200px'}}>
             <DndContext
-                // onDragOver={(event) => {
-                //     // console.log(event.over, event.active)
-                // }}
                 onDragEnd={handleDragEnd}
                 sensors={sensors}
-                // collisionDetection={closestCenter}
+                collisionDetection={closestCenter}
             >
                 <Droppable id={droppableId}>
                     <SortableContext items={items} strategy={verticalListSortingStrategy}>
-                        {/*<div style={{*/}
-                        {/*    border: '1px dotted green',*/}
-                        {/*    margin: '1px',*/}
-                        {/*    maxHeight: '200px',*/}
-                        {/*    overflow: "scroll",*/}
-                        {/*    maxWidth: '200px'*/}
-                        {/*}}>*/}
                             {items.map(id => {
                                 return (<SortableItem id={id}/>)
                             })}
-                        {/*</div>*/}
                     </SortableContext>
                 </Droppable>
             </DndContext>

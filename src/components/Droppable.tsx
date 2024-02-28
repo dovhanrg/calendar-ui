@@ -21,7 +21,8 @@ const Droppable = ({children, id}: Props) => {
                     width: '100%',
                     // height: '20px',
                     border: '1px solid',
-                    borderColor: '#f0f'
+                    borderColor: '#f0f',
+                    minHeight: '170px',
                 }}>
                 {children}
                 </div>

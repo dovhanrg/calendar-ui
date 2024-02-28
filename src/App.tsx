@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
+import { v4 as uuidV4 } from 'uuid';
 import {WEEK_DAYS, YEAR} from "./consts";
 import {getArrayOfDays} from "./helpers/dates";
 import {
@@ -18,9 +19,8 @@ import WeekShift from "./components/common/WeekShift";
 
 export default function App() {
     const [year, setYear] = useState(YEAR);
-    const days = getArrayOfDays(year);
-    const [ids, setIds] = useState<number[][]>(days.map((_, index) => []));
-    const [items, setItems] = useState([[1, 2, 3, 4], [5, 6, 7, 8], [9]]);
+    const initialDays = getArrayOfDays(year).slice(0, 10);
+    const [records, setRecords] = useState<{id: string; text: string}[][]>(initialDays.map((_, index) => []));
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -36,28 +36,40 @@ export default function App() {
     const handleDragEnd = (event: DragEndEvent) => {
         const {over, active} = event;
         if (over && active.id !== over.id) {
-            const itemIndexFrom = items.findIndex((item) => item.includes(Number(active.id)));
-            const itemIndexTo = items.findIndex((item) => item.includes(Number(over.id)));
-            setItems((items) => {
-                const updatedItems = [...items];
+            const itemIndexFrom = records.findIndex((item) => item.some((text) => text.id === active.id));
+            let itemIndexTo = records.findIndex((item) => item.some((text) => text.id === over.id));
+            itemIndexTo = itemIndexTo !== -1 ? itemIndexTo :  Number(over.id);
+            setRecords((dayRecords) => {
+                const updatedRecords = [...dayRecords];
                 if (itemIndexFrom === itemIndexTo) {
-                    const oldItem = items[itemIndexFrom];
-                    const oldIndex = oldItem.indexOf(Number(active.id));
-                    const newIndex = oldItem.indexOf(Number(over.id));
-                    updatedItems[itemIndexFrom] = arrayMove(oldItem, oldIndex, newIndex);
+                    const oldRecords = dayRecords[itemIndexFrom];
+                    const oldRecordIndex = oldRecords.findIndex((text) => text.id === active.id);
+                    const newRecordIndex = oldRecords.findIndex((text) => text.id === over.id);
+                    updatedRecords[itemIndexFrom] = arrayMove(oldRecords, oldRecordIndex, newRecordIndex);
                 } else {
-                    const itemsToRemoveFrom = items[itemIndexFrom];
-                    const itemsToPlaceTo = items[itemIndexTo];
-                    const oldIndex = itemsToRemoveFrom.indexOf(Number(active.id));
-                    const newIndex = itemsToPlaceTo.indexOf(Number(over.id));
-                    itemsToPlaceTo.splice(newIndex, 0, ...itemsToRemoveFrom.splice(oldIndex, 1));
-                    updatedItems[itemIndexFrom] = itemsToRemoveFrom;
-                    updatedItems[itemIndexTo] = itemsToPlaceTo;
+                    const recordsToRemoveFrom = dayRecords[itemIndexFrom];
+                    const recordsToPlaceTo = dayRecords[itemIndexTo];
+                    const oldRecordIndex = recordsToRemoveFrom.findIndex((text) => text.id === active.id);
+                    const newRecordIndex = recordsToPlaceTo.findIndex((text) => text.id === over.id);
+                    recordsToPlaceTo.splice(newRecordIndex, 0, ...recordsToRemoveFrom.splice(oldRecordIndex, 1));
+                    updatedRecords[itemIndexFrom] = recordsToRemoveFrom;
+                    updatedRecords[itemIndexTo] = recordsToPlaceTo;
                 }
-                return updatedItems;
+                return updatedRecords;
             });
         }
     };
+
+    const handleUpdateRecord = (recordsIndex: number, recordId: string) => {
+        return (text: string) => {
+            setRecords((records) => {
+                const recordIndex = records[recordsIndex].findIndex((record) => record.id === recordId);
+                records[recordsIndex][recordIndex].text = text;
+                return [...records];
+            });
+        }
+    };
+
 
 
     return (
@@ -69,7 +81,7 @@ export default function App() {
                 <div style={{height: '50px'}}/>
             </div>
             <div
-                style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr'}}
+                style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr 1fr'}}
             >
                 {WEEK_DAYS.map(dayName => <div>{dayName}</div>)}
                 <WeekShift year={year}/>
@@ -78,14 +90,19 @@ export default function App() {
                     collisionDetection={closestCenter}
                     sensors={sensors}
                 >
-                    {items.map((item, index) => {
+                    {records.map((dayRecords, index) => {
                         return (
-                            <Droppable id={(index + 1).toString(10)}>
-                                <SortableContext items={item} strategy={verticalListSortingStrategy}>
-                                    {item.map(id => {
-                                        return (<SortableItem id={id}/>)
-                                    })}
-                                </SortableContext>
+                            <Droppable id={(index).toString(10)}>
+                                {/*{dayRecords.length === 0*/}
+                                {/*    ? <div style={{height: '40px', border: '1px solid blue'}}>*/}
+                                {/*        <button>add record</button>*/}
+                                {/*    </div>*/}
+                                    <SortableContext items={dayRecords} strategy={verticalListSortingStrategy}>
+                                        {dayRecords.map((text) => {
+                                            const onRecordChange = handleUpdateRecord(index, text.id);
+                                            return (<SortableItem onRecordChange={onRecordChange} id={text.id} text={text.text} key={text.id} />)
+                                        })}
+                                    </SortableContext>
                             </Droppable>
                         );
                     })}

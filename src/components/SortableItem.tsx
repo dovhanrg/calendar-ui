@@ -1,11 +1,14 @@
 import React from 'react';
 import {useSortable} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
+import EditableField from "./common/EditableField";
 
 type Props = {
-    id: number;
+    id: string;
+    text: string;
+    onRecordChange: (text: string) => void;
 }
-export function SortableItem(props: Props) {
+export function SortableItem({id, text, onRecordChange}: Props) {
     const {
         attributes,
         listeners,
@@ -14,7 +17,7 @@ export function SortableItem(props: Props) {
         transition,
         isDragging,
     } = useSortable({
-        id: props.id
+        id: id
     });
 
     // console.log({isDragging});
@@ -27,7 +30,7 @@ export function SortableItem(props: Props) {
 
     return (
         <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-            {`${props.id}`}
+            <EditableField text={text} onChange={onRecordChange} />
         </div>
     );
 }

@@ -12,12 +12,17 @@ export function SortableItem(props: Props) {
         setNodeRef,
         transform,
         transition,
-    } = useSortable({id: props.id});
+        isDragging,
+    } = useSortable({
+        id: props.id
+    });
+
+    // console.log({isDragging});
 
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
-        height: '40px', maxWidth: '150px', width: '100%', border: '1px solid blue'
+        height: '40px', border: '1px solid blue'
     };
 
     return (

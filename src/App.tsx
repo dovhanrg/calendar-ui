@@ -13,6 +13,7 @@ import {
 } from "@dnd-kit/core";
 import WeekShift from "./components/common/WeekShift";
 import {sortableKeyboardCoordinates, verticalListSortingStrategy} from "@dnd-kit/sortable";
+import Droppable from "./components/Droppable";
 
 
 export default function App() {
@@ -33,8 +34,8 @@ export default function App() {
 
     const handleDragEnd = (event: DragEndEvent) => {
         // console.log(event.over);
-        // const {over, active} = event;
-        // console.log(over, active);
+        const {over, active} = event;
+        console.log(over, active);
         // if (active.id !== over?.id) {
         //
         // }
@@ -64,7 +65,7 @@ export default function App() {
                 >
                     {days.map((day, index) => {
                         return (
-                            <TextFiled droppableId={index.toString(10)} draggableIds={ids[index]} />
+                                <TextFiled droppableId={index.toString(10)} draggableIds={ids[index]} />
                         )
                     })}
                 </DndContext>

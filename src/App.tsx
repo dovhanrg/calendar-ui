@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import { v4 as uuidV4 } from 'uuid';
+import React, {useState} from 'react';
+import {v4 as uuidV4} from 'uuid';
 import {WEEK_DAYS, YEAR} from "./consts";
 import {getArrayOfDays} from "./helpers/dates";
 import {
@@ -89,10 +89,10 @@ export default function App() {
                 <button onClick={handlePrevYearClick}>{`${year - 1}<<`}</button>
                 <button disabled>{year}</button>
                 <button onClick={handleNextYearClick}>{`>>${year + 1}`}</button>
-                <div style={{height: '50px'}}/>
+                <div style={{height: '50px'}}/> // TODO: move to Emotion
             </div>
             <div
-                style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr 1fr'}}
+                style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr 1fr'}} // TODO: move to Emotion
             >
                 {WEEK_DAYS.map(dayName => <div>{dayName}</div>)}
                 <WeekShift year={year}/>

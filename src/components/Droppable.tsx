@@ -17,7 +17,7 @@ const Droppable = ({children, id}: Props) => {
 
         return (
             <div ref={setNodeRef} style={style}>
-                <div style={{
+                <div style={{// TODO: move to Emotion
                     width: '100%',
                     // height: '20px',
                     border: '1px solid',

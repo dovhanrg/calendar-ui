@@ -1,7 +1,5 @@
 import InlineEdit from "@atlaskit/inline-edit";
-import TextArea from "@atlaskit/textarea";
 import TextField from "@atlaskit/textfield";
-import {useEffect, useState} from "react";
 
 
 type Props = {
@@ -17,7 +15,7 @@ const EditableField = ({text, onChange}: Props) => {
                 return (
                     <TextField {...fieldProps} autoFocus />
                 )
-            }}
+            }}// TODO: move to Emotion
             readView={() => (
                 <div style={{padding: '5px 2px'}}>
                     {text || ''}

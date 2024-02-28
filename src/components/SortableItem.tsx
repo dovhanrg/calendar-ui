@@ -15,17 +15,14 @@ export function SortableItem({id, text, onRecordChange}: Props) {
         setNodeRef,
         transform,
         transition,
-        isDragging,
     } = useSortable({
         id: id
     });
 
-    // console.log({isDragging});
-
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
-        height: '40px', border: '1px solid blue'
+        height: '40px', border: '1px solid blue' // TODO: move to Emotion
     };
 
     return (

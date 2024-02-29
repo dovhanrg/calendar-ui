@@ -1,3 +1,5 @@
+/** @jsxImportSource @emotion/react */
+
 import React, {ChangeEvent, useState} from 'react';
 import {v4 as uuidV4} from 'uuid';
 import {WEEK_DAYS, YEAR} from "./consts";
@@ -11,12 +13,15 @@ import {
     useSensor,
     useSensors
 } from "@dnd-kit/core";
-import {arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy} from "@dnd-kit/sortable";
-import Droppable from "./components/Droppable";
-import {SortableItem} from "./components/SortableItem";
+import {arrayMove, sortableKeyboardCoordinates} from "@dnd-kit/sortable";
 import WeekShift from "./components/common/WeekShift";
+import SortableContainer from "./components/SortableContainer";
+import DummyDay from "./components/common/DummyDay";
+import {css as makeCss} from '@emotion/react';
 
-export type Records = { id: string; text: string };
+const css = makeCss({display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr 1fr'});
+
+export type Records = { id: string; text: string; labels: [] };
 
 export default function App() {
     const [year, setYear] = useState(YEAR);
@@ -78,7 +83,7 @@ export default function App() {
 
     const handleAddRecord = (recordsIndex: number) => {
         setRecords((records) => {
-            records[recordsIndex] = [{id: uuidV4(), text: ''}, ...records[recordsIndex]];
+            records[recordsIndex] = [{id: uuidV4(), text: '', labels: []}, ...records[recordsIndex]];
             return [...records];
         });
     };
@@ -98,9 +103,7 @@ export default function App() {
                     <input type="text" onChange={handleSearch}/>
                 </div>
             </div>
-            <div
-                style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr 1fr'}} // TODO: move to Emotion
-            >
+            <div css={css}>
                 {WEEK_DAYS.map(dayName => <div>{dayName}</div>)}
                 <WeekShift year={year}/>
                 <DndContext
@@ -112,42 +115,22 @@ export default function App() {
                         ? records.map((dayRecords, index) => {
                             return dayRecords.some((record) => record.text && record.text.indexOf(searchableText) > -1)
                                 ? (
-                                    <Droppable id={(index).toString(10)}>
-                                        <button onClick={() => handleAddRecord(index)}>Add</button>
-                                        <SortableContext items={dayRecords} strategy={verticalListSortingStrategy}>
-                                            {dayRecords.map((text) => {
-                                                return (<SortableItem
-                                                    onRecordChange={handleUpdateRecord(index, text.id)}
-                                                    id={text.id}
-                                                    text={text.text}
-                                                    key={text.id}
-                                                />)
-                                            })}
-                                        </SortableContext>
-                                    </Droppable>
-                                ) : <div style={{
-                                    width: '100%',
-                                    // height: '20px',
-                                    border: '1px solid',
-                                    borderColor: '#f0f',
-                                    minHeight: '170px',
-                                }}/>;
+                                    <SortableContainer
+                                        key={uuidV4()}
+                                        index={index}
+                                        handleAddRecord={handleAddRecord}
+                                        handleUpdateRecord={handleUpdateRecord}
+                                        dayRecords={dayRecords}/>
+                                ) : <DummyDay key={uuidV4()} />;
                         })
                         : records.map((dayRecords, index) => {
                             return (
-                                <Droppable id={(index).toString(10)}>
-                                    <button onClick={() => handleAddRecord(index)}>Add</button>
-                                    <SortableContext items={dayRecords} strategy={verticalListSortingStrategy}>
-                                        {dayRecords.map((text) => {
-                                            return (<SortableItem
-                                                onRecordChange={handleUpdateRecord(index, text.id)}
-                                                id={text.id}
-                                                text={text.text}
-                                                key={text.id}
-                                            />)
-                                        })}
-                                    </SortableContext>
-                                </Droppable>
+                                <SortableContainer
+                                    key={uuidV4()}
+                                    index={index}
+                                    handleAddRecord={handleAddRecord}
+                                    handleUpdateRecord={handleUpdateRecord}
+                                    dayRecords={dayRecords}/>
                             )
                         })}
                 </DndContext>

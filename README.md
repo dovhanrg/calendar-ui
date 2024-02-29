@@ -1,3 +1,6 @@
+## [project repository https://github.com/dovhanrg/calendar-ui](https://github.com/dovhanrg/calendar-ui)
+## [How it looks now on gh-pages](https://github.com/dovhanrg/calendar-ui/)
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

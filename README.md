@@ -1,5 +1,5 @@
 ## [project repository https://github.com/dovhanrg/calendar-ui](https://github.com/dovhanrg/calendar-ui)
-## [How it looks now on gh-pages](https://github.com/dovhanrg/calendar-ui/)
+## [How it looks now on gh-pages](https://dovhanrg.github.io/calendar-ui/)
 
 # Getting Started with Create React App
 

@@ -1,6 +1,6 @@
 
 
-export const YEAR = 2023;
+export const YEAR = 2024;
 export const WEEK_DAYS = [
     'Monday',
     'Tuesday',

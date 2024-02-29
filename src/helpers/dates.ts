@@ -3,14 +3,11 @@ export function getDaysInMonth(month: number, year: number) { // Use 1 for Janua
     return new Date(year, month, 0).getDate();
 }
 
-export function getArrayOfDays(year: number) {
-    const arr = [];
-    for (let month = 1; month <= 12; month++) {
-        arr.push(new Array(getDaysInMonth(month, year)).fill(null).map((_, i) => i+1));
-    }
-    return arr.flat();
+export function getArrayOfDays({year, month}: {year: number, month: number}) {
+    console.log({year, month});
+    return new Array(getDaysInMonth(month, year)).fill(null).map((_, i) => i+1);
 }
 
-export function getWeekShift(fullYear: number) {
-    return new Date(fullYear,0, 0).getDay();
+export function getWeekShift({year, month}: {year: number, month: number}) {
+    return new Date(year,month-1, 1).getUTCDay();
 }

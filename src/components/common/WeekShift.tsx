@@ -3,11 +3,11 @@ import React from "react";
 
 
 type Props = {
-    year: number;
+    monthYear: { month: number; year: number };
 };
-const WeekShift = ({year}: Props)=> {
+const WeekShift = ({monthYear}: Props) => {
     return (
-        <React.Fragment>{new Array(getWeekShift(year)).fill(null).map(() => <div/>)}</React.Fragment>
+        <React.Fragment>{new Array(getWeekShift(monthYear)).fill(null).map(() => <div/>)}</React.Fragment>
     );
 };
 

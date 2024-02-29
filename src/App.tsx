@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 
-import React, {ChangeEvent, useState} from 'react';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import {v4 as uuidV4} from 'uuid';
 import {WEEK_DAYS, YEAR} from "./consts";
 import {getArrayOfDays} from "./helpers/dates";
@@ -18,19 +18,35 @@ import WeekShift from "./components/common/WeekShift";
 import SortableContainer from "./components/SortableContainer";
 import DummyDay from "./components/common/DummyDay";
 import {css as makeCss} from '@emotion/react';
+import Button from "./components/common/Button";
 
-const css = makeCss({
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr 1fr',
-});
+const monthLabel = {
+    1: 'January',
+    2: 'February',
+    3: 'March',
+    4: 'April',
+    5: 'May',
+    6: 'June',
+    7: 'July',
+    8: 'August',
+    9: 'September',
+    10: 'October',
+    11: 'November',
+    12: 'December'
+} as const;
 
 export type Label = { id: string; text: string; color: string };
 export type Records = { id: string; text: string; labels: Label[] };
 
 export default function App() {
-    const [year, setYear] = useState(YEAR);
-    const initialDays = getArrayOfDays(year).slice(0, 30);
-    const [records, setRecords] = useState<Records[][]>(initialDays.map((_, index) => []));
+    const [monthYear, setMonthYear] = useState<{ month: keyof typeof monthLabel, year: number }>({
+        month: 1,
+        year: YEAR
+    });
+    const [allRecords, setAllRecords] = useState<{ [p: string]: Records[][] }>({
+        [`${monthYear.year}-${monthYear.month}`]: getArrayOfDays(monthYear).map(() => []),
+    });
+    const [records, setRecords] = useState<Records[][]>(getArrayOfDays(monthYear).map(() => []));
     const [searchableText, setSearchableText] = useState<string>('');
 
     const sensors = useSensors(
@@ -40,9 +56,41 @@ export default function App() {
         })
     );
 
+    useEffect(() => {
+        setRecords(() => {
+            if (`${monthYear.year}-${monthYear.month}` in allRecords) {
+                return [...allRecords[`${monthYear.year}-${monthYear.month}`]];
+            }
+            return getArrayOfDays(monthYear).map(() => []);
+        });
+    }, [monthYear.month]);
 
-    const handlePrevYearClick = () => setYear(year - 1);
-    const handleNextYearClick = () => setYear(year + 1);
+    const updateAllRecords = () => {
+        setAllRecords((prevState) => {
+            return {...prevState, [`${monthYear.year}-${monthYear.month}`]: records}
+        });
+    }
+
+    const handleNextMonthClick = () => {
+        updateAllRecords();
+        setMonthYear((prevState) => {
+            const month = prevState.month + 1 > 12 ? 1 : prevState.month + 1 as keyof typeof monthLabel;
+            return {
+                month,
+                year: prevState.month + 1 > 12 ? prevState.year++ : prevState.year,
+            };
+        });
+    };
+    const handlePrevMonthClick = () => {
+        updateAllRecords();
+        setMonthYear((prevState) => {
+            const month = prevState.month - 1 === 0 ? 12 : prevState.month - 1 as keyof typeof monthLabel;
+            return {
+                month,
+                year: prevState.month - 1 === 0 ? prevState.year-- : prevState.year,
+            };
+        });
+    };
 
     const handleDragEnd = (event: DragEndEvent) => {
         const {over, active} = event;
@@ -111,26 +159,39 @@ export default function App() {
                 position: "fixed",
                 top: 0,
                 backgroundColor: '#fdf9f9',
+                display: "flex",
+                flexDirection: "column",
             })}>
-                <button onClick={handlePrevYearClick}>{`${year - 1}<<`}</button>
-                <button disabled>{year}</button>
-                <button onClick={handleNextYearClick}>{`>>${year + 1}`}</button>
-                <div css={makeCss({height: '50px'})}>
-                    <input
-                        type="text"
-                        css={makeCss({
-                            outline: "none",
-                            border: "none",
-                            borderRadius: '3px',
-                            fontSize: 14,
-                            lineHeight: '20px',
-                            fontWeight: 400,
-                            padding: '8px 12px',
-                            boxShadow: 'inset 0 0 0 2px var(--ds-border-input, #091e4224)',
-                        })}
-                        onChange={handleSearch}
-                        placeholder="Search tasks ..."
-                    />
+                <div css={makeCss({
+                    display: 'flex',
+                    margin: '10px 0',
+                })}>
+                    <div css={makeCss({display: "flex", flexGrow: .3,})}>
+                        <input
+                            type="text"
+                            css={makeCss({
+                                outline: "none",
+                                border: "none",
+                                borderRadius: '3px',
+                                fontSize: 14,
+                                lineHeight: '20px',
+                                fontWeight: 400,
+                                padding: '8px 12px',
+                                boxShadow: 'inset 0 0 0 2px var(--ds-border-input, #091e4224)',
+                            })}
+                            onChange={handleSearch}
+                            placeholder="Search tasks ..."
+                        />
+                    </div>
+                    <div css={makeCss({
+                        display: "flex",
+                        flexGrow: .7,
+                        alignItems: "center",
+                    })}>
+                        <Button onClick={handlePrevMonthClick} label={'<<'}/>
+                        <div css={makeCss({margin: '0 10px'})}>{monthLabel[monthYear.month]}</div>
+                        <Button onClick={handleNextMonthClick} label={'>>'}/>
+                    </div>
                 </div>
                 <div css={makeCss({
                     display: "flex"
@@ -144,7 +205,7 @@ export default function App() {
                 gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr 1fr',
                 marginTop: 92,
             })}>
-                <WeekShift year={year}/>
+                <WeekShift monthYear={monthYear}/>
                 <DndContext
                     onDragEnd={handleDragEnd}
                     collisionDetection={closestCenter}
@@ -154,12 +215,15 @@ export default function App() {
                         ? records.map((dayRecords, index) => {
                             return dayRecords.some((record) => record.text && record.text.indexOf(searchableText) > -1)
                                 ? (
-                                    <SortableContainer
-                                        key={uuidV4()}
-                                        index={index}
-                                        handleAddRecord={handleAddRecord}
-                                        handleUpdateRecord={handleUpdateRecord}
-                                        dayRecords={dayRecords}/>
+                                    <>
+                                        {index + 1}
+                                        <SortableContainer
+                                            key={uuidV4()}
+                                            index={index}
+                                            handleAddRecord={handleAddRecord}
+                                            handleUpdateRecord={handleUpdateRecord}
+                                            dayRecords={dayRecords}/>
+                                    </>
                                 ) : <DummyDay key={uuidV4()}/>;
                         })
                         : records.map((dayRecords, index) => {

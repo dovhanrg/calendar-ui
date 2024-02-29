@@ -19,13 +19,17 @@ import SortableContainer from "./components/SortableContainer";
 import DummyDay from "./components/common/DummyDay";
 import {css as makeCss} from '@emotion/react';
 
-const css = makeCss({display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr 1fr'});
+const css = makeCss({
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr 1fr',
+});
 
-export type Records = { id: string; text: string; labels: [] };
+export type Label = { id: string; text: string; color: string };
+export type Records = { id: string; text: string; labels: Label[] };
 
 export default function App() {
     const [year, setYear] = useState(YEAR);
-    const initialDays = getArrayOfDays(year).slice(0, 10);
+    const initialDays = getArrayOfDays(year).slice(0, 30);
     const [records, setRecords] = useState<Records[][]>(initialDays.map((_, index) => []));
     const [searchableText, setSearchableText] = useState<string>('');
 
@@ -94,17 +98,52 @@ export default function App() {
 
 
     return (
-        <div>
-            <div>
+        <div css={makeCss({
+            width: '100%',
+            maxWidth: '1020px',
+            margin: '0 auto',
+            backgroundColor: '#fdf9f9'
+        })}>
+            <div css={makeCss({
+                height: 92,
+                width: '100%',
+                maxWidth: 1020,
+                position: "fixed",
+                top: 0,
+                backgroundColor: '#fdf9f9',
+            })}>
                 <button onClick={handlePrevYearClick}>{`${year - 1}<<`}</button>
                 <button disabled>{year}</button>
                 <button onClick={handleNextYearClick}>{`>>${year + 1}`}</button>
-                <div style={{height: '50px'}}>{/*// TODO: move to Emotion*/}
-                    <input type="text" onChange={handleSearch}/>
+                <div css={makeCss({height: '50px'})}>
+                    <input
+                        type="text"
+                        css={makeCss({
+                            outline: "none",
+                            border: "none",
+                            borderRadius: '3px',
+                            fontSize: 14,
+                            lineHeight: '20px',
+                            fontWeight: 400,
+                            padding: '8px 12px',
+                            boxShadow: 'inset 0 0 0 2px var(--ds-border-input, #091e4224)',
+                        })}
+                        onChange={handleSearch}
+                        placeholder="Search tasks ..."
+                    />
                 </div>
+                <div css={makeCss({
+                    display: "flex"
+                })}>{WEEK_DAYS.map(dayName => <div css={makeCss({
+                    flexGrow: 1,
+                    textAlign: "center",
+                })}>{dayName}</div>)}</div>
             </div>
-            <div css={css}>
-                {WEEK_DAYS.map(dayName => <div>{dayName}</div>)}
+            <div css={makeCss({
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr 1fr',
+                marginTop: 92,
+            })}>
                 <WeekShift year={year}/>
                 <DndContext
                     onDragEnd={handleDragEnd}
@@ -121,7 +160,7 @@ export default function App() {
                                         handleAddRecord={handleAddRecord}
                                         handleUpdateRecord={handleUpdateRecord}
                                         dayRecords={dayRecords}/>
-                                ) : <DummyDay key={uuidV4()} />;
+                                ) : <DummyDay key={uuidV4()}/>;
                         })
                         : records.map((dayRecords, index) => {
                             return (

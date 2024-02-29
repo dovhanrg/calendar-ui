@@ -4,7 +4,13 @@ import InlineEdit from "@atlaskit/inline-edit";
 import TextField from "@atlaskit/textfield";
 import {css as makeCss} from "@emotion/react";
 
-const css = makeCss`padding: 5px 2px;`
+const css = makeCss({
+    padding: '5px 5px',
+    lineHeight: '20px',
+    height: '20px',
+    backgroundColor: '#D3C7D5',
+    borderRadius: '2px',
+});
 
 
 type Props = {

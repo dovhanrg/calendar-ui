@@ -4,11 +4,14 @@ import {useDroppable} from "@dnd-kit/core";
 import React from "react";
 import {css as makeCss} from "@emotion/react";
 
-const css = makeCss`
-                width: 100%;
-                border: 1px solid #f0f;
-                min-height: 170px;
-            `;
+const css = makeCss({
+    minHeight:'170px',
+    boxSizing: 'border-box',
+    padding: '4px',
+    margin: '2px',
+    backgroundColor: '#eee9e9',
+    borderRadius: '2px',
+});
 
 type Props = {
     children: React.ReactNode;

@@ -16,11 +16,12 @@ import Droppable from "./components/Droppable";
 import {SortableItem} from "./components/SortableItem";
 import WeekShift from "./components/common/WeekShift";
 
+export type Records = { id: string; text: string };
 
 export default function App() {
     const [year, setYear] = useState(YEAR);
     const initialDays = getArrayOfDays(year).slice(0, 10);
-    const [records, setRecords] = useState<{ id: string; text: string }[][]>(initialDays.map((_, index) => []));
+    const [records, setRecords] = useState<Records[][]>(initialDays.map((_, index) => []));
     const [searchableText, setSearchableText] = useState<string>('');
 
     const sensors = useSensors(

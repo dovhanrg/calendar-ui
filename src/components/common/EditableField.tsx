@@ -1,5 +1,10 @@
+/** @jsxImportSource @emotion/react */
+
 import InlineEdit from "@atlaskit/inline-edit";
 import TextField from "@atlaskit/textfield";
+import {css as makeCss} from "@emotion/react";
+
+const css = makeCss`padding: 5px 2px;`
 
 
 type Props = {
@@ -15,9 +20,9 @@ const EditableField = ({text, onChange}: Props) => {
                 return (
                     <TextField {...fieldProps} autoFocus />
                 )
-            }}// TODO: move to Emotion
+            }}
             readView={() => (
-                <div style={{padding: '5px 2px'}}>
+                <div css={css}>
                     {text || ''}
                 </div>
             )}

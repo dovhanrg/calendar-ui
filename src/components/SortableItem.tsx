@@ -1,7 +1,15 @@
+/** @jsxImportSource @emotion/react */
+
 import React from 'react';
 import {useSortable} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
 import EditableField from "./common/EditableField";
+import {css as makeCss } from "@emotion/react";
+
+const css = makeCss`
+        height: 40px; 
+        border: 1px solid blue;
+    `;
 
 type Props = {
     id: string;
@@ -19,14 +27,14 @@ export function SortableItem({id, text, onRecordChange}: Props) {
         id: id
     });
 
+
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
-        height: '40px', border: '1px solid blue' // TODO: move to Emotion
     };
 
     return (
-        <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+        <div ref={setNodeRef} style={style} css={css} {...attributes} {...listeners}>
             <EditableField text={text} onChange={onRecordChange} />
         </div>
     );

@@ -8,4 +8,4 @@ jobs:
   lesson-1:
     runs-on: ubuntu-latest
     steps:
-      - echo "hello-world"
+      - run: echo "hello-world"
